@@ -27,3 +27,13 @@ also kuch error bhi so skta to try catch ya promises (.then .catch) use kro
 so it will add to that line so we avoid it by adding semicolon in front (use try catch in the {})
 5. we set up the mongoDb in databse dir in index.js (checkout)
 6. As early as possible in your application,import and configure dotenv. (to import them we have to use them as an experimental thing - in dev script we have to add "nodemon -r dotenv/config --experimental-json-modules src/index.js")
+
+# lec 5
+1. first we are exporting express and creating app commands
+2. we install cookie-parser and cors (proxy lagana) - middlewares (app.use) use with it.
+3. data comes from many sites so we are setting rules in app.js 
+like setting the app.use cores origin to the url from which route the data is allowed 
+read about cors and cookies in app.js code
+4. middleware - checking between req and res, (like is someone open insta profile so he should get the profile details but we don't know the user is sign up or not so we use a checking in the middle called that)(or like check if user is admin) (err,req,res,next) (where next is a flag which middleware use)
+5. now in src index.js file we have database connections (and database se bhot jagah baat krne wale hai)(so we set them into a utility pack)
+6. we create one more utility to handle errors so that all the errors are in a standard formet
