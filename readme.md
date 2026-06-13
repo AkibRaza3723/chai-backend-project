@@ -17,3 +17,13 @@ middlewares - cookies (models - schemas) (routes - tosetroutes) (utils - utility
 the user and mailing these commonly used functions are stored here 
 8. we use prittier ndm mode because if we work on team someone might use semicolon someone not it create mess while pushing(dev dependency)
 with pritter we have to add some files manually (.prettierrc - configuration) (read doc for doubts)
+
+# lec 4
+1. setup mongoDb atlas an get the connection string (setup port and URI in .env)
+2. installed mongooes express and dotenv
+3. we are using data base from another continent so data aane mei time lag stka use async await
+also kuch error bhi so skta to try catch ya promises (.then .catch) use kro
+4. we use iify to connect dbs ;(async()=>{})() - with a semicolon in front to avoid error like if last line doesn't have semicolon
+so it will add to that line so we avoid it by adding semicolon in front (use try catch in the {})
+5. we set up the mongoDb in databse dir in index.js (checkout)
+6. As early as possible in your application,import and configure dotenv. (to import them we have to use them as an experimental thing - in dev script we have to add "nodemon -r dotenv/config --experimental-json-modules src/index.js")
