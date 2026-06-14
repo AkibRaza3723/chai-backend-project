@@ -3,6 +3,8 @@
 # backend model link 
 - [Model link](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)
 
+# configuration setting start
+
 # work 3
 1. we create a public file then temp but we can't push them to them into git wihtout using gitkeep(empty file)
 this empty file used to track and keep empty folder to the project
@@ -50,3 +52,13 @@ second for tokens we download jsonwebtokens(jwt) (use for refresh tokens)
 then we import them in user.model and use them (see there)
 5. We set password encyption and then a functuon to match the password with the data 
 also we did write the JWT function for access token and refresh tokens in .env and user.model file
+6. must read user.model and video.model (contains explanations in terms of comment)
+
+# work 7
+1. today we learn about file uploading on the website (we made a utility function of file upload)
+2. we use cloudinary to store files (images pdfs and files). and multer for uploding it into the code
+3. first we take the file from user using multer and save it to local server then we use cloudinary and take the file from local server and upload it to servers. (we can direclty upload using cloudinary but above is production level code) 
+4. set up cloudinary in .env file api details from the cloudinary website 
+5. after setting up go and create a middleware with multer ("jaa rhe ho to milte hue jana") (jaha jaha file upload ki jarurat hogi waha waha multer ko inject kr denge) *(read multer git documentation)(uploaded a screenshot how multer inject and work as a middleware)
+
+# configuration setting completed 
