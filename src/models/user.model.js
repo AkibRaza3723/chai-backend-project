@@ -41,7 +41,7 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Video", // Reference to the Video model
     }],
-    Password: {
+    password: {
         type: String,//why string? because we will store the hashed password as a string in the database, not the plain text password. The hashed password is generated using a hashing algorithm (like bcrypt) and is stored as a string representation of the hash.
         required: [true, "Password is required"],
         minlength: [6, "Password must be at least 6 characters long"],
@@ -60,21 +60,16 @@ timestamps: true // Automatically add createdAt and updatedAt fields to the sche
 //we use the validation save so that it do the work just before saving
 //here we dont use arrow function because we want to use `this` keyword which refers to the current document being saved, and arrow functions do not have their own this context, so we use regular function syntax to access the document's properties correctly. (data nhi ayega userschema ke andar ka)
 //used next because it is a callback function that is called to indicate that the middleware has completed its task and the next middleware in the stack can be executed. In this case, after hashing the password, we call next() to proceed with saving the user document to the database.
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("Password")) {
-        return next(); // If the password is not modified, skip hashing and proceed to the next middleware
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) {
+        return; // If the password is not modified, skip hashing
     }
-    try {
-        this.Password = await bcrypt.hash(this.Password, 10); // Hash the password using the generated salt
-        next(); // Proceed to the next middleware after hashing
-    } catch (error) {
-        next(error); // Pass any errors to the next middleware for error handling
-    }
+    this.password = await bcrypt.hash(this.password, 10); // Hash the password using the generated salt
 });
 
 //now we will create a method to compare the entered password with the hashed password stored in the database. This method will be used during the login process to verify the user's credentials.
-userSchema.methods.isPasswordCorrect = async function (Password) {
-    return await bcrypt.compare(Password, this.Password); // Compare the entered password with the hashed password
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password); // Compare the entered password with the hashed password
 };
 
 //we will also create a method to generate a JWT token for the user, which can be used for authentication and authorization purposes in the application.(it's like a key that the user can use to access protected routes and resources in the application, and it contains encoded information about the user, such as their ID and other relevant data, which can be verified by the server to ensure the authenticity of the token and the user's identity.)

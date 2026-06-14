@@ -90,3 +90,7 @@ check for response - user creation \
 return response - otherwise error 
 
 # work 3 
+1. today we check the bugs of last work, through postman and try to debug or solve it
+2. after fixing the bug we have to unlink the file in try of cloudinary like we did in error of cloudinary
+so that it can remove from localpath easily
+3. now analyse the whole response by console.log from cloudinary, also do this for req.body and req.files in user.ctlrs

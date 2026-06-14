@@ -1,6 +1,4 @@
-// require("dotenv").config({ path: './.env'}); // Load environment variables from .env file 
-import dotenv from "dotenv"; //imporoved method to load environment variables using ES6 import syntax
-dotenv.config({ path: './.env' }); // Load environment variables from .env file, 
+import "dotenv/config"; //better way to call for dotenv
 
 import mongoose from "mongoose";
 import {DB_NAME} from "./constants.js";

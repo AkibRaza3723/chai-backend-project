@@ -9,30 +9,29 @@ const registerUser = asyncHandler(async (req,res)=>{
     console.log("email:",email);
     //from here we can handle data through postman but we can't handle files from here
     // if(fullname===""){ throw new ApiError(400,"fullname is required")}//like this we can check all 
-    if([fullname,email,username,password].some((feild)=>feild?.trim()===""))
+    if([fullName,email,username,password].some((feild)=>feild?.trim()===""))
     {//trim removes the white space
        throw new ApiError(400,"All feilds are required");
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
      $or : [{username},{email}]
     })
     if(existedUser){
         throw new ApiError(409,"user with email or username already exist");
     }
     
-    const avatarLocalPath = req.files?.avatar[0]?.path; //? is used to the the fun optional mile to kaam kro verna leave it 
-    console.log(avatarLocalPath);
-    const coverLocalPath = req.files?.coverImage[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path; //? is used to the the fun optional mile to kaam kro ve
+    const coverLocalPath = req.files?.coverImage?.[0]?.path;
     if (!avatarLocalPath) {
-        throw new ApiError(400,"avatar is required");
+        throw new ApiError(400,"Avatar file is missing from the request. Make sure you are using 'form-data' and the key name is exactly 'avatar'");
     }
 
     //uplode them to cloudinary
     const avatar = await uploadAtCloudinary(avatarLocalPath)
     const coverImage = await uploadAtCloudinary(coverLocalPath)
     if(!avatar){
-         throw new ApiError(400,"avatar is required");
+         throw new ApiError(400,"Avatar file was received, but failed to upload to Cloudinary. Check your Cloudinary credentials and dotenv setup.");
     }
     
     const user1 = await User.create({
