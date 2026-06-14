@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { registerUser } from "../controllers/user.ctlrs.js";
+import {upload} from "../middlewares/multer.js"
 
 // http:localhost8000/api/v1/users iske baad ke sare routes yaha likhenge
 const router = Router()
 //"router tumko ek route batata hu"
-router.route("/register").post(registerUser)
+router.route("/register").post(upload.fields([
+    {name : "avatar", maxCount:1},
+    {name : "coverImage", maxCount:1}
+]),registerUser) //middleware ijected
 
 
 export default router

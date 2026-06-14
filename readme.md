@@ -70,4 +70,23 @@ also we did write the JWT function for access token and refresh tokens in .env a
 
 # work 1 
 1. now we start defining controllers using async handler helper file. and then we go for. routes
-2. now as the user type the url http:localhost8000/api/v1/users then our first file run index.js then it call for app.js and from app.js it uses middleware and it goes to user.route where we have already set and controller for registeration 
+2. now as the user type the url http:localhost8000/api/v1/users then our first file run index.js then it call for app.js and from app.js it uses middleware and it goes to user.route where we have already set and controller for registeration
+3. used postman extension of vs code to post the req and get the response after handling the errors
+
+# work 2
+1. today we write the proper code for register user in the controller. (logic building exercise)
+2. we handle data from user/ctlrs but for files we have to use multer in routes
+3. rules for forming a controller 
+
+logic for resigrations: \
+take input from user - frontend \
+check validations- email is correct or not- not empty \
+check if user already exist - can check via username or email \
+check files are present or not - avtar \
+upload them to cloudinary - check for avtar \
+create a user object - create entry in DB\
+remove password and refresh token from resposne \
+check for response - user creation \
+return response - otherwise error 
+
+# work 3 
