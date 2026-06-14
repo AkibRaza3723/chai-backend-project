@@ -3,7 +3,7 @@
 # backend model link 
 - [Model link](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)
 
-# configuration setting start
+# configuration setting
 
 # work 3
 1. we create a public file then temp but we can't push them to them into git wihtout using gitkeep(empty file)
@@ -61,4 +61,13 @@ also we did write the JWT function for access token and refresh tokens in .env a
 4. set up cloudinary in .env file api details from the cloudinary website 
 5. after setting up go and create a middleware with multer ("jaa rhe ho to milte hue jana") (jaha jaha file upload ki jarurat hogi waha waha multer ko inject kr denge) *(read multer git documentation)(uploaded a screenshot how multer inject and work as a middleware)
 
-# configuration setting completed 
+#
+# About HTTP 
+1. https://youtu.be/qgZiUvV41TI?si=ze8qG8IasNmgGS00 http crash course 
+
+#
+# Implimentation of backend
+
+# work 1 
+1. now we start defining controllers using async handler helper file. and then we go for. routes
+2. now as the user type the url http:localhost8000/api/v1/users then our first file run index.js then it call for app.js and from app.js it uses middleware and it goes to user.route where we have already set and controller for registeration 
