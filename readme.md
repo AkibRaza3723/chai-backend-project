@@ -94,3 +94,23 @@ return response - otherwise error
 2. after fixing the bug we have to unlink the file in try of cloudinary like we did in error of cloudinary
 so that it can remove from localpath easily
 3. now analyse the whole response by console.log from cloudinary, also do this for req.body and req.files in user.ctlrs
+
+# work 4
+1. we talk about acess token and refresh token which is used to define for log in page 
+refresh token prevent the problem of log-in everytime we open
+2. now we create log in user in the controller 
+3. steps to create a log in controller \
+take data from req.body \
+username or email \
+find the user \
+check the password \
+access and refresh token generate \
+send cookies to the user
+4. in user controllers we created a function to generate refresh and access tokens
+5. while creating log out controller first clear the cookies also remove refresh token from dbs.
+6. but while loggin out we can't ask for credentials so we create a middleware auth in which we are setting a new req.user value to user which we can use to find the id using access token which we have to logout
+
+# work 5
+1. solve the issues related to testing login logout option
+2. after that create a end point so that when acces token end then the frontend can hit a endpoint so that using refresh token we can generate another access token wihtout log in again.
+3. cookies mei encoded hota hai database mei decoded (tokens)

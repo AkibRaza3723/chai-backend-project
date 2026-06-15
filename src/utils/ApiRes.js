@@ -1,9 +1,8 @@
 class ApiRes {
-  constructor(statusCode, message = "success", data, res) {
-    this.res = res;
+  constructor(statusCode, data, message = "Success") {
     this.statusCode = statusCode;
-    this.message = message;
     this.data = data;
+    this.message = message;
     this.success = statusCode < 400; // Determine success based on status code (status codes below 400 are considered successful)
   }
 }

@@ -3,6 +3,22 @@ import {ApiError} from "../utils/ApiErrors.js"
 import {ApiRes} from "../utils/ApiRes.js"
 import {User} from "../models/user.model.js"
 import {uploadAtCloudinary} from "../utils/cloudinary.js"
+import jwt from "jsonwebtoken"
+
+const generateAcessTokenAndRefreshTokens = async(userId) => {
+    try {
+       const user =  await User.findById(userId)
+       const accessToken = user.generateAccessToken()
+       const refreshToken = user.generateRefreshToken()
+ 
+       user.refreshToken = refreshToken; //just find by id kia hai to password feild bhi hogi yaha jise validate krna padege
+       await user.save({validateBeforeSave:false});
+
+       return {accessToken,refreshToken}
+    } catch (error) {
+        throw new ApiError(500,"something went wrong while generating tokens")
+    }
+}
 
 const registerUser = asyncHandler(async (req,res)=>{
     const {username, fullName, email, password} = req.body
@@ -50,9 +66,98 @@ const registerUser = asyncHandler(async (req,res)=>{
         throw new ApiError(500,"Something when wrong while registering a user");        
     }
     return res.status(201).json(
-        new ApiRes(200,checkCreatedUser,"user registered sucessfully")
+        new ApiRes(200, checkCreatedUser.toObject(), "user registered sucessfully")
     )
 })
 
+const logInUser = asyncHandler(async(req,res)=>{
+    const {email,username,password} = req.body
+    if (!username && !email) {
+        throw new ApiError(400,"username or email is required")
+    }
+    const user = await User.findOne({$or:[{username},{email}]})
+    if(!user){
+        throw new ApiError(404,"User does not exist")
+    }
+    const checkPassword = await user.isPasswordCorrect(password);
+    if(!checkPassword){
+        throw new ApiError(401,"password is not valid")
+    }
 
-export {registerUser}
+    const {accessToken,refreshToken} = await generateAcessTokenAndRefreshTokens(user._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+    //to send cookies we have to define options
+    const options ={
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production"
+    }//now these cookies are only modifyable from server
+    //we have cookies acces through cookies parsers injected.
+    return res.status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken", refreshToken,options)
+    .json(
+        new ApiRes(200,{user: loggedInUser.toObject(), accessToken, refreshToken}, "user logged in sucesfully")
+    )
+})
+
+const logOutUser = asyncHandler(async(req,res)=>{
+    //now how we know which user to log out we can't ask them by form so we design a middleware(like cookies)
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {$set:{refreshToken : undefined }},
+        {new: true} //return ke response mei new updated value milegi 
+    ) //direct find krke update kr diya to no validation of password
+
+    const options ={
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production" //use true when using production https
+    }
+    return res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(new ApiRes(200,{},"User logged out"))
+})
+
+const refreshAccessToken = asyncHandler(async(req,res)=>{
+   const incomingRT = req.cookies.refreshToken;
+   if(!incomingRT){
+    throw new ApiError(401,"unauthorized access")
+   }
+   try {
+    const decodedToken = jwt.verify(
+     incomingRT,
+     process.env.REFRESH_TOKEN_SECRET
+    )//cookies mei encoded hota hai database mei decoded
+ 
+    const user = await User.findById(decodedToken?._id)
+    if(!user){
+     throw new ApiError(401,"Invalid refresh token")
+    }
+ 
+    if (incomingRT !== user?.refreshToken) {
+      throw new ApiError(401,"refresh token is expired or used")
+    }
+    
+     const {accessToken, newrefreshToken}=await generateAcessTokenAndRefreshTokens(user._id)
+    const options ={ //for security purpose
+         httpOnly: true,
+         secure: process.env.NODE_ENV === "production" //use true when using production https
+     }
+     
+     return res
+     .status(200)
+     .cookie("accessToken",accessToken,options)
+     .cookie("refreshToken",newrefreshToken,options)
+     .json( new ApiRes(
+         200,
+         {accessToken,refreshToken:newrefreshToken},
+         "access token refreshed sucessfully"
+     ))
+   } catch (error) {
+     throw new ApiError(401,error?.message||"invalid refresh token - catch")
+   }// we have set the controller for end point now set it into the routes 
+})
+
+export {registerUser,logInUser,logOutUser,refreshAccessToken}

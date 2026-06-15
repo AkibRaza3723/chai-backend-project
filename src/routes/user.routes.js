@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.ctlrs.js";
+import { logInUser, logOutUser, refreshAccessToken, registerUser } from "../controllers/user.ctlrs.js";
 import {upload} from "../middlewares/multer.js"
+import {varifyJWT} from "../middlewares/auth.mw.js"
 
 // http:localhost8000/api/v1/users iske baad ke sare routes yaha likhenge
 const router = Router()
@@ -10,6 +11,11 @@ router.route("/register").post(upload.fields([
     {name : "coverImage", maxCount:1}
 ]),registerUser) //middleware ijected
 
+router.route("/login").post(logInUser)
+
+//secured routes
+router.route("/logout").post(varifyJWT,logOutUser)
+router.route("/refresh-token").post(refreshAccessToken) //while using refresh tokens we don't need to varify jwt
 
 export default router
 //export default ho rha ho to man chaha naam de skte import ke waqt
