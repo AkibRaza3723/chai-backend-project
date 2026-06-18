@@ -114,3 +114,10 @@ send cookies to the user
 1. solve the issues related to testing login logout option
 2. after that create a end point so that when acces token end then the frontend can hit a endpoint so that using refresh token we can generate another access token wihtout log in again.
 3. cookies mei encoded hota hai database mei decoded (tokens)
+
+# work 6
+1. today we think about how subscription work (how it connect with the user)(we created a subscription model - used it in next work)
+2. now as we talk about more controller so we have update password which we can do by verifyJWT middleware easily
+3. also we are goong to set currentuser in this simply pass the jwt req.user so that the profile can know who is the user logged in and what details to show
+4. anything else you need to update fullname email etc you can by creating functions (create separate functions for files)(use jwt auth for getting user details)(if ek chez save krni ho to user.save use kro verna jada cheze ho to pehle hi findbyidandupdate use krlo (finding id, {$set{ }},{new:true}))
+5. for udpating files use multer and auth both (in multer if sigle file is what we deal with then we can write req.file and if multiply then we can weite req.files)(both have been written in controller somewhere ask Ai about it by giving line no.)

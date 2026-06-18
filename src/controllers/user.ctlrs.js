@@ -160,4 +160,41 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
    }// we have set the controller for end point now set it into the routes 
 })
 
-export {registerUser,logInUser,logOutUser,refreshAccessToken}
+const changeCurrentPassword = asyncHandler(async(req,res)=>{
+    // we don't have to check user log in hai ya nhi cause ham auth.mw laga denge route mei to check
+    const {oldPassword,newPassword} = req.body
+    //now auth middleware use hua hai to user exist karega req.body mei as we set it in the last of it 
+    const user= await User.findById(req.user?._id)
+    const ispasswordcorrect = await user.isPasswordCorrect(oldPassword);
+    if (!ispasswordcorrect) {
+        throw new ApiError(400,"invalid old password");
+    } // method created in user model
+    user.password =newPassword;
+    await user.save({validateBeforeSave:false})//baki ke validation nhi run krne
+    //now run another created model pre to hash the new paassword (pre save se just pehle chalta hai)
+
+    return res.status(200).json(new ApiRes(200,{},"data update sucesfully"))
+})
+const getCurrentUser = asyncHandler(async (req,res) => {
+    return res.status(200).json(new ApiRes(200, req.user ,"current user fetch sucessfully"))
+}) //here we also use varifyjwt so req.user contains all the details about user
+
+//can create updation like above 
+
+const updateUserAvatar = asyncHandler(async(req,res)=> { //using multer middle ware for using req.files also auth for authentication 
+    const avatarLocalPath = req.file?.path //req the path of the image that are sent to update?
+    if (!avatarLocalPath) {
+        throw new ApiError(400,"avatar file is missing")
+    }
+    const avatar = await uploadAtCloudinary(avatarLocalPath)
+    if (!avatar) {
+      throw new ApiError(400,"error while uploading on clodinary")        
+    }
+    const user = await User.findByIdAndUpdate(req.user?._id,{$set:{
+        avatar: avatar.url 
+    }},{new:true}).select("-password")
+
+    return res.status(200).json( new ApiRes(200,user,"avatar immage updated sucessfully"))
+})
+
+export {registerUser,logInUser,logOutUser,refreshAccessToken,changeCurrentPassword, getCurrentUser, updateUserAvatar};
