@@ -2,9 +2,10 @@ import "dotenv/config"; //better way to call for dotenv
 
 import mongoose from "mongoose";
 import {DB_NAME} from "./constants.js";
-import {app} from "./app.js"; 
 
+import {app} from "./app.js"; 
 import connectDB from "./db/index.js";
+
 connectDB().then(() => {
     console.log("Database connection established successfully.");
 

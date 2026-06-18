@@ -5,15 +5,14 @@ import { User } from "../models/user.model.js";
 
 export const varifyJWT= asyncHandler(async(req,res,next)=>{
    try {
-     const token = req.cookies?.accessToken || req.header("Authorization")?.replace(/^Bearer\s+/i, ""); //using header for mobile application
+     const token = req.cookies?.accessToken; 
      if(!token){
          throw new ApiError(401,"Unauthorized request")
      }
      const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-     const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+     const user = await User.findById(decodedToken?._id).select("-refreshToken")
  
      if (!user) {
-         // todo : discuss about frontend 
          throw new ApiError(401,"invalid access token")
      }
  
@@ -21,6 +20,5 @@ export const varifyJWT= asyncHandler(async(req,res,next)=>{
      next()
    } catch (error) {
      throw new ApiError(401, error?.message || "invalid access token catch")
-   }
-//using try catch cause it's database operations there are chances of failure
+   }// cookie mangwai req se usse user dhundha then req.user mei user ko daal dia 
 })

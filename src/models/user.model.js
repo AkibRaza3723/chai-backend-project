@@ -51,7 +51,7 @@ const userSchema = new Schema({
         //what is refresh token? A refresh token is a long-lived token that is used to obtain a new access token without requiring the user to re-authenticate. It is typically issued alongside an access token and has a longer expiration time. When the access token expires, the client can use the refresh token to request a new access token from the server, allowing for seamless user experiences without frequent logins.
         default: null, // Set default value to null if no refresh token is provided
     },
-},
+}, 
 {
 timestamps: true // Automatically add createdAt and updatedAt fields to the schema
 }

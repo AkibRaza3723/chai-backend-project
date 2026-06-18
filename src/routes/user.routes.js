@@ -9,7 +9,7 @@ const router = Router()
 router.route("/register").post(upload.fields([
     {name : "avatar", maxCount:1},
     {name : "coverImage", maxCount:1}
-]),registerUser) //middleware ijected
+]),registerUser) //middleware ijected 
 
 router.route("/login").post(logInUser)
 
