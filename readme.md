@@ -121,3 +121,12 @@ send cookies to the user
 3. also we are goong to set currentuser in this simply pass the jwt req.user so that the profile can know who is the user logged in and what details to show
 4. anything else you need to update fullname email etc you can by creating functions (create separate functions for files)(use jwt auth for getting user details)(if ek chez save krni ho to user.save use kro verna jada cheze ho to pehle hi findbyidandupdate use krlo (finding id, {$set{ }},{new:true}))
 5. for udpating files use multer and auth both (in multer if sigle file is what we deal with then we can write req.file and if multiply then we can weite req.files)(both have been written in controller somewhere ask Ai about it by giving line no.)
+6. TODO : create the old avatar deletion utility and use it after updation of avatar (22 of route also)
+
+# work 7
+1. today we go for aggregation pipelines (for subscription schema)(read documentations)
+2. aggregation pipeline is a powerful data processing framework that passes documents through a multi-stage sequence to transform, analyze, and compute results directly on the database server.
+3. analyse the controller [206-267] carefully tooks like lookup and match are used there for subscription data
+4. now for watch history we use sub pipelines (used nested lookup)(ek lookup se video document la denge for watch history but videos mei owner bhi hai joki user hi hai to uske liye dubara pipeline ander hi chalani padegi)
+5. (req.user._id) this give us the string of the id we have to pass proper objectID to get the ID but mongoose fixes this problem itself
+(that's why we have created user ID at line no 271 in controller cause pipelines follow mongoDb not mongoose)

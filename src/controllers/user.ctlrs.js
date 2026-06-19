@@ -4,6 +4,7 @@ import {ApiRes} from "../utils/ApiRes.js"
 import {User} from "../models/user.model.js"
 import {uploadAtCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 
 const generateAcessTokenAndRefreshTokens = async(userId) => {
     try {
@@ -195,6 +196,113 @@ const updateUserAvatar = asyncHandler(async(req,res)=> { //using multer middle w
     }},{new:true}).select("-password")
 
     return res.status(200).json( new ApiRes(200,user,"avatar immage updated sucessfully"))
+})//todo do here 
+
+const getUserChannelProfile = asyncHandler(async (req,res) => {
+    //if you want a channel profile then you go through their url (params)
+    const {username}=req.params
+    if (!username?.trim()) {
+        throw new ApiError(400,"username is missing")
+    }
+    const channel = await User.aggregate([
+        {
+        $match:{
+            username: username?.toLowerCase
+            }
+        },
+        {
+            $lookup:{
+                from :"subscriptions",//added an s at last cause it save in database as prual form 
+                localField:"_id", // taking the local feild the id of the user
+                foreignField:"channel", // sare channel ko select krne se mil jayenge subscriber 
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup:{
+                from:"subscriptions",
+                localField:"_id",
+                foreignField:"subscriber",
+                as: "subscriptions"
+            }
+        },
+        {
+            $addFields:{
+                subscriberCount:{
+                    $size:"$subscribers"
+                },
+                subscriptionCount:{
+                    $size:"$subscriptions"
+                },
+                isSubscribed:{
+                    $cond:{
+                        if:{$in:[req.user?._id, "$subscribers.subscriber"]},
+                        then: true,
+                        else: false
+                    }//check if subscribed or not
+                }
+            }
+        },
+        {  //it provide projection kitna data dena hai(selected cheze)
+            $project :{
+                fullName:1,
+                username:1,
+                subscriberCount:1,
+                subscriptionCount:1,
+                isSubscribed:1,
+                avatar:1,
+                coverImage:1
+            }
+        }
+
+])
+   if (!channel?.length) {
+        throw new ApiError(404,"channel does not exist")
+   } //channel ki first value hi useful hogi cause wahi user hoga - study
+
+   return res.status(200).json(
+    new ApiRes(200,channel[0],"user channel fetched sucesfully")
+   )
 })
 
-export {registerUser,logInUser,logOutUser,refreshAccessToken,changeCurrentPassword, getCurrentUser, updateUserAvatar};
+const getWatchHistory = asyncHandler(async (req,res) => {
+    const user = await User.aggregate([
+        {
+            $match:{
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup:{
+                from:"videos",
+                localField:"watchHistory",
+                foreignField:"_id",
+                as: "watchHistory",
+                pipeline:[
+                    {
+                        $lookup:{//ab mei video mei hu aur user mei lookup kr raha hu
+                            from:"users",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as: "owner",
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullName:1,
+                                        username:1,
+                                        avatar:1,
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res.status(200).json(
+        new ApiRes(200, user[0].watchHistory,"user history fetch sucessfully")
+    )
+})
+export {registerUser,logInUser,logOutUser,refreshAccessToken,changeCurrentPassword, getCurrentUser, updateUserAvatar,getUserChannelProfile,getWatchHistory};
